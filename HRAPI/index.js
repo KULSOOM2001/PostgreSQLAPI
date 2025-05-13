@@ -226,6 +226,32 @@ app.get('/employee-location-country', async (req, res) => {
     }
   });
   
+app.get('/totalcounts', async (req, res) => {
+    try {
+        const employeeResult = await pool.query(`select count(employee_id) as total_employees from employees`);
+        const countriesResult = await pool.query(`select count(country_id) as total_countries from countries`);
+        const jobResult = await pool.query(`select count(job_id) as total_jobs from jobs`);
+        const deptResult = await pool.query(`select count(department_id) as total_departments from departments`);
+        const locationResult = await pool.query(`select count(location_id) as total_locations from locations`);
+        const regionResult = await pool.query(`select count(region_id) as total_regions from regions`);
+        const jobHistoryResult = await pool.query("SELECT COUNT(*) AS total_job_history FROM job_history");
+
+        const counts = {
+            employees: employeeResult.rows[0].total_employees,
+            countries: countriesResult.rows[0].total_countries,
+            jobs: jobResult.rows[0].total_jobs,
+            dept: deptResult.rows[0].total_departments,
+            location: locationResult.rows[0].total_locations,
+            regions: regionResult.rows[0].total_regions,
+            job_history: jobHistoryResult.rows[0].total_job_history
+        };
+
+        res.json(counts);
+    } catch (err) {
+        res.status(500).json({ Error: err.message });
+    }
+});
+  
 const PORT =process.env.PORT || 6005;
 app.listen(PORT,()=>{
     console.log(`Connected Successfully...on PORT ${PORT}`)
